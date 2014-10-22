@@ -29,5 +29,52 @@ namespace ServicesTests
             //  and passes student
             mockStudentRepository.AssertWasCalled(x => x.Save(student));
         }
+
+        [Test]
+        public void RegisterNewStudent_SavesTheStudentWithPresenter()
+        {
+            IStudentRepository mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>();
+            IStudentView mockStudentView = MockRepository.GenerateMock<IStudentView>();
+
+            StudentRegistrationPresenter studentRegistrationService = new StudentRegistrationPresenter(mockStudentView,mockStudentRepository);
+
+            Student student = new Student();
+            student.Id = 123;
+            student.FirstName = "John";
+            student.LastName = "Doe";
+
+            studentRegistrationService.RegisterNewStudent(student);
+            mockStudentRepository.AssertWasCalled(x => x.Save(student));
+        }
+
+        [Test]
+        public void RegisterNewStudent_SetWasStudentSavedToTrueOnTheView_WhenTheStudentIsValid()
+        {
+            IStudentRepository mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>();
+            IStudentView mockStudentView = MockRepository.GenerateMock<IStudentView>();
+
+            StudentRegistrationPresenter studentRegistrationService = new StudentRegistrationPresenter(mockStudentView, mockStudentRepository);
+
+            Student student = new Student();
+            student.Id = 123;
+            student.FirstName = "John";
+            student.LastName = "Doe";
+
+            studentRegistrationService.RegisterNewStudent(student);
+
+            mockStudentView.AssertWasCalled(x => x.WasStudentSaved=true);
+        }
+        [Test]
+        public void RegisterNewStudent_SetWasStudentSavedToTrueOnTheView_WhenTheStudentIsNotValid()
+        {
+            IStudentRepository mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>();
+            IStudentView mockStudentView = MockRepository.GenerateMock<IStudentView>();
+
+            StudentRegistrationPresenter studentRegistrationService = new StudentRegistrationPresenter(mockStudentView, mockStudentRepository);
+
+            studentRegistrationService.RegisterNewStudent(null);
+
+            mockStudentView.AssertWasCalled(x => x.WasStudentSaved = false);
+        }
     }
 }
