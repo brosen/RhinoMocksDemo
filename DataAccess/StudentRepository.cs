@@ -3,7 +3,7 @@ using LowLevelDataLayer;
 
 namespace DataAccess
 {
-    public class StudentRepository 
+    public class StudentRepository : IStudentRepository 
     {
         public Student FindById(int id)
         {
@@ -21,6 +21,7 @@ namespace DataAccess
         public void Save(Student student)
         {
             DataCommand someLowLevelDataCommand = new DataCommand();
+            //just to simulate database command
             someLowLevelDataCommand.ExecuteCommand("Insert into Students(Id, FirstName, LastName)...");
         }
     }

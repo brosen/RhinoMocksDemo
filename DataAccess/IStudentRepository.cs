@@ -1,9 +1,10 @@
 ﻿using System;
+using Domain;
 namespace DataAccess
 {
-    interface IStudentRepository
+    public interface IStudentRepository
     {
-        Domain.Student FindById(int id);
-        void Save(Domain.Student student);
+        Student FindById(int id);
+        void Save(Student student);
     }
 }
