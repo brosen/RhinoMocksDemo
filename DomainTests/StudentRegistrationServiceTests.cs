@@ -12,7 +12,10 @@ namespace ServicesTests
         [Test]
         public void RegisterNewStudent_SavesTheStudent()
         {
-            StudentRegistrationService studentRegistrationService = new StudentRegistrationService();
+            //returns an interface, which is not an instance of the StudentRepository class
+            IStudentRepository mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>(); 
+
+            StudentRegistrationService studentRegistrationService = new StudentRegistrationService(mockStudentRepository);
 
             Student student = new Student();
             student.Id = 123;
@@ -21,12 +24,10 @@ namespace ServicesTests
 
             studentRegistrationService.RegisterNewStudent(student);
 
-            StudentRepository studentRepository = new StudentRepository();
-            Student savedStudent = studentRepository.FindById(123);
-
-            Assert.AreEqual(student.Id, savedStudent.Id);
-            Assert.AreEqual(student.FirstName, savedStudent.FirstName);
-            Assert.AreEqual(student.LastName, savedStudent.LastName);
+            //no need to find student by id anymore
+            //the AssertWasCalled goes to lamba expression and calls the Save on a IStudentRepository 
+            //  and passes student
+            mockStudentRepository.AssertWasCalled(x => x.Save(student));
         }
     }
 }
