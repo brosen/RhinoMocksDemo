@@ -16,9 +16,6 @@ namespace Services
         }
         public void RegisterNewStudent(Student student)
         {
-            //returning rhinomocks mock, which is the mock, and when no implementation
-            //it will always return false which will cause the RegisterNewStudent_SavesTheStudent_WhenTheStudentIsValid
-            //test to fail -> need mockStudentValidator.Stub()
             bool isStudentValid = _studentValidator.ValidateStudent(student); 
             if (isStudentValid)
             {

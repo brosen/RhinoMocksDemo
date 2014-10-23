@@ -16,7 +16,6 @@ namespace ServicesTests
             var mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>();
             var mockStudentValidator = MockRepository.GenerateMock<IStudentValidator>();
 
-            //when validate is called on the mockStudentValidator with any argument, i want to return true
             mockStudentValidator.Stub(x => x.ValidateStudent(Arg<Student>.Is.Anything)).Return(true);
 
             var studentRegistrationService = new StudentRegistrationService(mockStudentRepository, mockStudentValidator);

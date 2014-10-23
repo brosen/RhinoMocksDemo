@@ -19,14 +19,14 @@ namespace Services
         }
         public void RegisterNewStudent(Student student)
         {
-            if (student == null)
-            {
-                _studentView.WasStudentSaved = false;
-            }
-            else
+            if (_studentView.ShouldSaveStudent)
             {
                 _studentRepository.Save(student);
                 _studentView.WasStudentSaved = true;
+            }
+            else
+            {
+                _studentView.WasStudentSaved = false;
             }
         }
     }
