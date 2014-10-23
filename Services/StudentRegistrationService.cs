@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using DataAccess;
 using Domain;
 
@@ -14,17 +15,49 @@ namespace Services
             _studentRepository = studentRepository;
             _studentValidator = studentValidator;
         }
-        public void RegisterNewStudent(Student student)
+        //public void RegisterNewStudent(Student student)
+        //{
+        //    bool isStudentValid = _studentValidator.ValidateStudent(student); 
+        //    if (isStudentValid)
+        //    {
+        //        _studentRepository.Save(student);
+        //    }
+        //    else
+        //    {
+        //        throw new ArgumentException("Invalid Student","student");
+        //    }
+        //}
+        public void RegisterNewStudent(int studentId, string firstName, string lastName)
         {
-            bool isStudentValid = _studentValidator.ValidateStudent(student); 
+            var student = new Student { Id = studentId, FirstName = firstName, LastName = lastName };
+            bool isStudentValid = _studentValidator.ValidateStudent(student);
             if (isStudentValid)
             {
                 _studentRepository.Save(student);
             }
             else
             {
-                throw new ArgumentException("Invalid Student","student");
+                throw new ArgumentException("Invalid Student", "student");
             }
+        }
+
+        public void DeleteStudents(params int[] studentIds)
+        {
+            List<Student> students = new List<Student>();
+            foreach (var studentId in studentIds)
+            {
+                students.Add(_studentRepository.FindById(studentId));
+            }
+            _studentRepository.DeleteStudents(students);
+        }
+        public void DeleteStudent(Student student)
+        {
+            _studentRepository.DeleteStudent(student);
+        }
+
+        public Student GetStudentByFirstName(string lastName)
+        {
+            return _studentRepository.FindByLastName(lastName);
         }
     }
 }
