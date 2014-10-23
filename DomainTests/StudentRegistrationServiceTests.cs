@@ -235,5 +235,29 @@ namespace ServicesTests
             //Assert
             mockStudentRepository.AssertWasCalled(x => x.Save(Arg<Student>.Matches(new StudentContraint(expectedStudent))));
         }
+
+        [Test]
+        public void RegisterNewStudent_SavesTheStudent_WhenTheStudentIsValid_UsingAutoMocker()
+        {
+            //Arrange
+                //this tells automocker the name of class i want to test and it creates an instance of it
+                //StudentRegistrationService in this case
+                //and below ClassUnderTest means that class
+                //autoMocker.Get
+            var autoMocker=new RhinoAutoMocker<StudentRegistrationService>();
+
+            var mockStudentValidator = autoMocker.Get<IStudentValidator>(); //still need this for stub
+            mockStudentValidator.Stub(x => x.ValidateStudent(Arg<Student>.Is.Anything)).Return(true);
+
+            const int studentId = 123;
+            const string firstName = "John";
+            const string lastName = "Doe";
+
+            //Act -> call method being tested
+            autoMocker.ClassUnderTest.RegisterNewStudent(studentId, firstName, lastName);
+
+            //Assert
+            autoMocker.Get<IStudentRepository>().AssertWasCalled(x => x.Save(Arg<Student>.Matches(y => IsCustomerMatching(studentId, firstName, lastName, y))));
+        }
     }
 }
