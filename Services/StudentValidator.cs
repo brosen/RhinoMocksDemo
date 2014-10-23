@@ -12,5 +12,10 @@ namespace Services
         {
             return student != null;
         }
+       // public bool ValidateStudent(Student student, out Student outStudent)
+        public bool ValidateStudent(Student student, ref Student outStudent)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

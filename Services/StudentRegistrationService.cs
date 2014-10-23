@@ -30,7 +30,14 @@ namespace Services
         public void RegisterNewStudent(int studentId, string firstName, string lastName)
         {
             var student = new Student { Id = studentId, FirstName = firstName, LastName = lastName };
-            bool isStudentValid = _studentValidator.ValidateStudent(student);
+            Student outStudent=null;
+            bool isStudentValid = _studentValidator.ValidateStudent(student,ref outStudent);
+
+            if (outStudent == null)
+            {
+                throw new Exception("outstudent was null");
+            }
+
             if (isStudentValid)
             {
                 _studentRepository.Save(student);

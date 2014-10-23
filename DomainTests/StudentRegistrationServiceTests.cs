@@ -5,6 +5,7 @@ using Domain;
 using NUnit.Framework;
 using Rhino.Mocks;
 using Services;
+using StructureMap.AutoMocking;
 
 namespace ServicesTests
 {
@@ -177,6 +178,38 @@ namespace ServicesTests
             mockStudentRepository.AssertWasCalled(x => x.FindByLastName(Arg<string>.Matches(Rhino.Mocks.Constraints.Text.EndsWith("nes"))));
             mockStudentRepository.AssertWasCalled(x => x.FindByLastName(Arg<string>.Matches(Rhino.Mocks.Constraints.Text.StartsWith("Jon"))));
             mockStudentRepository.AssertWasCalled(x => x.FindByLastName(Arg<string>.Matches(Rhino.Mocks.Constraints.Text.Like("Jone.*")))); //regex
+        }
+
+        [Test]
+        public void RegisterNewStudent_SavesTheStudent_WhenTheStudentIsValid_WithOutParam()
+        {
+            //Arrange
+            //needed structuremap.automocking nuget pack
+            var autoMocker = new RhinoAutoMocker<StudentRegistrationService>();
+
+            var mockStudentValidator = autoMocker.Get<IStudentValidator>();
+            //syntax for out param
+            //mockStudentValidator.Stub(x => x.ValidateStudent(Arg<Student>.Out(new Student()).Dummy)).Return(true);
+
+            //for out
+            // mockStudentValidator.Stub(x => x.ValidateStudent(Arg<Student>.Is.Anything, out Arg<Student>.Out(new Student()).Dummy)).Return(true);
+            //for ref
+            mockStudentValidator.Stub(x => x.ValidateStudent(
+                Arg<Student>.Is.Anything, 
+                ref Arg<Student>.Ref(
+                    Rhino.Mocks.Constraints.Is.Anything(), new Student()).Dummy
+                )
+            ).Return(true);
+            
+            const int studentId = 123;
+            const string firstName = "John";
+            const string lastName = "Doe";
+
+            //Act
+            autoMocker.ClassUnderTest.RegisterNewStudent(studentId, firstName, lastName);
+
+            //Assert
+            autoMocker.Get<IStudentRepository>().AssertWasCalled(x => x.Save(Arg<Student>.Matches(y => y.IsCustomerMatching(firstName,lastName,studentId,y))));
         }
     }
 }
