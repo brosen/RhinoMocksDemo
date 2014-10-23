@@ -40,10 +40,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IStudentValidator.cs" />
     <Compile Include="IStudentView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StudentRegistrationPresenter.cs" />
     <Compile Include="StudentRegistrationService.cs" />
+    <Compile Include="StudentValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\DataAccess\DataAccess.csproj">

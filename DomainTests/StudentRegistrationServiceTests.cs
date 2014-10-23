@@ -1,4 +1,5 @@
-﻿using DataAccess;
+﻿using System;
+using DataAccess;
 using Domain;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -10,12 +11,15 @@ namespace ServicesTests
     public class StudentRegistrationServiceTests
     {
         [Test]
-        public void RegisterNewStudent_SavesTheStudent()
+        public void RegisterNewStudent_SavesTheStudent_WhenTheStudentIsValid()
         {
-            //returns an interface, which is not an instance of the StudentRepository class
-            IStudentRepository mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>(); 
+            var mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>();
+            var mockStudentValidator = MockRepository.GenerateMock<IStudentValidator>();
 
-            StudentRegistrationService studentRegistrationService = new StudentRegistrationService(mockStudentRepository);
+            //when validate is called on the mockStudentValidator with any argument, i want to return true
+            mockStudentValidator.Stub(x => x.ValidateStudent(Arg<Student>.Is.Anything)).Return(true);
+
+            var studentRegistrationService = new StudentRegistrationService(mockStudentRepository, mockStudentValidator);
 
             Student student = new Student();
             student.Id = 123;
@@ -24,10 +28,24 @@ namespace ServicesTests
 
             studentRegistrationService.RegisterNewStudent(student);
 
-            //no need to find student by id anymore
-            //the AssertWasCalled goes to lamba expression and calls the Save on a IStudentRepository 
-            //  and passes student
             mockStudentRepository.AssertWasCalled(x => x.Save(student));
+        }
+        [Test]
+        public void RegisterNewStudent_ThrowsAnException_WhenTheStudentIsNotValid()
+        {
+            var mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>();
+            var mockStudentValidator = MockRepository.GenerateMock<IStudentValidator>();
+            var studentRegistrationService = new StudentRegistrationService(mockStudentRepository, mockStudentValidator);
+
+            try
+            {
+                studentRegistrationService.RegisterNewStudent(null);
+                Assert.Fail("Argument Exception expected");
+            }
+            catch (Exception e)
+            {
+                Assert.IsInstanceOf<ArgumentException>(e);
+            }
         }
 
         [Test]
