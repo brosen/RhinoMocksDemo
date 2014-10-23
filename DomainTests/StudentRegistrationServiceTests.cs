@@ -13,6 +13,7 @@ namespace ServicesTests
         [Test]
         public void RegisterNewStudent_SavesTheStudent_WhenTheStudentIsValid()
         {
+            //Arrange
             var mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>();
             var mockStudentValidator = MockRepository.GenerateMock<IStudentValidator>();
 
@@ -25,20 +26,26 @@ namespace ServicesTests
             student.FirstName = "John";
             student.LastName = "Doe";
 
+            //Act -> call method being tested
             studentRegistrationService.RegisterNewStudent(student);
 
+            //Assert
             mockStudentRepository.AssertWasCalled(x => x.Save(student));
         }
         [Test]
         public void RegisterNewStudent_ThrowsAnException_WhenTheStudentIsNotValid()
         {
+            //Arrange
             var mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>();
             var mockStudentValidator = MockRepository.GenerateMock<IStudentValidator>();
             var studentRegistrationService = new StudentRegistrationService(mockStudentRepository, mockStudentValidator);
 
             try
             {
+                //Act
                 studentRegistrationService.RegisterNewStudent(null);
+
+                //Assert
                 Assert.Fail("Argument Exception expected");
             }
             catch (Exception e)
