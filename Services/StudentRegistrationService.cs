@@ -31,7 +31,7 @@ namespace Services
         {
             var student = new Student { Id = studentId, FirstName = firstName, LastName = lastName };
             Student outStudent=null;
-            bool isStudentValid = _studentValidator.ValidateStudent(student,ref outStudent);
+            bool isStudentValid = _studentValidator.ValidateStudent(student, ref outStudent);
 
             if (outStudent == null)
             {

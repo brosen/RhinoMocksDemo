@@ -31,15 +31,14 @@ namespace ServicesTests
             studentRegistrationService.RegisterNewStudent(studentId, firstName, lastName);
 
             //Assert
-            mockStudentRepository.AssertWasCalled(x => x.Save(Arg<Student>.Matches(IsCustomerMatching(studentId, firstName, lastName))));
+            mockStudentRepository.AssertWasCalled(x => x.Save(Arg<Student>.Matches(y=>IsCustomerMatching(studentId, firstName, lastName,y))));
         }
 
-        private static System.Linq.Expressions.Expression<Predicate<Student>> IsCustomerMatching(int studentId, string firstName, string lastName)
+        private static bool IsCustomerMatching(int studentId, string firstName, string lastName,Student student)
         {
-            return y =>
-                                    y.Id == studentId
-                                    && y.FirstName == firstName
-                                    && y.LastName == lastName;
+            return student.Id==studentId
+                && student.FirstName == firstName
+                && student.LastName==lastName;
         }
         //[Test]
         //public void RegisterNewStudent_ThrowsAnException_WhenTheStudentIsNotValid()
@@ -210,6 +209,31 @@ namespace ServicesTests
 
             //Assert
             autoMocker.Get<IStudentRepository>().AssertWasCalled(x => x.Save(Arg<Student>.Matches(y => y.IsCustomerMatching(firstName,lastName,studentId,y))));
+        }
+
+        [Test]
+        public void RegisterNewStudent_SavesTheStudent_WhenTheStudentIsValid_UsingCustomConstraint()
+        {
+            //Arrange
+            var mockStudentRepository = MockRepository.GenerateMock<IStudentRepository>();
+            var mockStudentValidator = MockRepository.GenerateMock<IStudentValidator>();
+
+            mockStudentValidator.Stub(x => x.ValidateStudent(Arg<Student>.Is.Anything)).Return(true);
+
+            var studentRegistrationService = new StudentRegistrationService(mockStudentRepository, mockStudentValidator);
+
+            Student expectedStudent=new Student
+                {
+                    Id= 123,
+                    FirstName= "John",
+                    LastName= "Doe"
+                };
+
+            //Act -> call method being tested
+            studentRegistrationService.RegisterNewStudent(expectedStudent.Id, expectedStudent.FirstName, expectedStudent.LastName);
+
+            //Assert
+            mockStudentRepository.AssertWasCalled(x => x.Save(Arg<Student>.Matches(new StudentContraint(expectedStudent))));
         }
     }
 }
